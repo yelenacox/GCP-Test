@@ -1,25 +1,39 @@
-import logo from './logo.svg';
 import './App.css';
+import { useEffect, useState } from 'react';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+export const App = () => {
+
+  const [data, setData] = useState([])
+
+  const getData = async () => {
+    await fetch(`https://anvil-fhir-vumc.uc.r.appspot.com/fhir/ResearchStudy`)
+      .then(res => res.json())
+      .then((d) => {
+        setData(d)
+      })
+  }
+
+  useEffect(() => {
+    getData()
+  }, []
+  )
+
+  return <>
+    <div className="data-table">
+      <table>
+        <tr>
+          <th>URL</th>
+          <th>Title</th>
+        </tr>
+        {data.entry?.slice(0, 10).map(
+          (d, index) => {
+            return <tr key={index} className="table-cell">
+              <td className='url-div'>{d.fullUrl}</td>
+              <td className='title-div'>{d.resource?.title}</td>
+            </tr>
+          }
+        )}
+      </table>
     </div>
-  );
+  </>
 }
-
-export default App;
